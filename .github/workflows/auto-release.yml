@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+      - test
+    
     paths-ignore:
       - '**.md'
       - '.gitignore'
       - '.editorconfig'
+  workflow_dispatch: 
 
 permissions:
   contents: write
