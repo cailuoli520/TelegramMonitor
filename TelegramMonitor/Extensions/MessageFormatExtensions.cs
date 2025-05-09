@@ -7,13 +7,13 @@ public static class MessageFormatExtensions
         User user,
         string messageText,
         IReadOnlyList<KeywordConfig> hitKeywords,
-        IEnumerable<string>? ads = null)
+        string ad = null)
     {
         var mergedStyle = MergeKeywordStyles(hitKeywords);
         var styledText = ApplyStylesToText(messageText, mergedStyle);
 
-        var adSection = ads != null
-            ? string.Join('\n', ads.Select(l => $"<b>{SecurityElement.Escape(l)}</b>"))
+        var adSection = !string.IsNullOrWhiteSpace(ad)
+            ? $"<b>{SecurityElement.Escape(ad)}</b>"
             : string.Empty;
 
         var plainList = string.Join(", ", hitKeywords.Select(k => k.KeywordContent));

@@ -5,6 +5,7 @@
 		<Nullable>disable</Nullable>
 		<NoWarn>1701;1702;1591;8632</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>	
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
@@ -12,6 +13,10 @@
 		<CopyRazorFilesToPublishDirectory>true</CopyRazorFilesToPublishDirectory>
 
 
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.9.7.60" />

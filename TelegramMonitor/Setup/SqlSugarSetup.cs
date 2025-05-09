@@ -4,14 +4,18 @@ public static class SqlSugarSetup
 {
     public static void AddSqlSugarSetup(this IServiceCollection services)
     {
-        string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "telegrammonitor.db");
-        string connectionString = $"DataSource={dbPath}";
+        var config = App.GetConfig<DbConnectionOptions>("DbConnection");
 
-        SqlSugarScope sqlSugar = new SqlSugarScope(
-            new ConnectionConfig()
+        if (!Enum.TryParse<DbType>(config.DbType, true, out var dbType))
+        {
+            throw new InvalidOperationException($"无效的数据库类型: {config.DbType}");
+        }
+
+        var sqlSugar = new SqlSugarScope(
+            new ConnectionConfig
             {
-                DbType = DbType.Sqlite,
-                ConnectionString = connectionString,
+                DbType = dbType,
+                ConnectionString = config.ConnectionString,
                 IsAutoCloseConnection = true
             },
             db => { }

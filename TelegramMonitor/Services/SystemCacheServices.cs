@@ -97,6 +97,8 @@ public class SystemCacheServices : ISingleton
     public void SetAdvertisement(List<string> ads) =>
         _cache.Set(AD_KEY, ads, TimeSpan.FromHours(1));
 
-    public List<string> GetAdvertisement() =>
-        _cache.Get<List<string>>(AD_KEY) ?? new List<string>();
+    public string GetAdvertisement() =>
+        (_cache.Get<List<string>>(AD_KEY) is { Count: > 0 } ads)
+            ? ads[Random.Shared.Next(ads.Count)]
+            : string.Empty;
 }

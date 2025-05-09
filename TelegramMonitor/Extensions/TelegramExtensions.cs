@@ -38,7 +38,7 @@ public static class TelegramExtensions
         _ => "Unknown"
     };
 
-    public static async Task HandleMessageAsync(this MessageBase messageBase, TelegramClientManager clientManager, 
+    public static async Task HandleMessageAsync(this MessageBase messageBase, TelegramClientManager clientManager,
         SystemCacheServices systemCacheServices, ILogger logger, bool edit = false)
     {
         if (edit) return;
@@ -82,7 +82,7 @@ public static class TelegramExtensions
             user.GetTelegramNickName(), user.id,
             chatBase.Title, message.message);
 
-        var ads = systemCacheServices.GetAdvertisement();
+        var ad = systemCacheServices.GetAdvertisement();
         var keywords = await systemCacheServices.GetKeywordsAsync() ?? new List<KeywordConfig>();
 
         var matchedUserKeywords = KeywordMatchExtensions.MatchUser(
@@ -103,7 +103,7 @@ public static class TelegramExtensions
         {
             var content = message.FormatForMonitor(
                               chatBase, user, messageText,
-                              matchedUserKeywords, ads);
+                              matchedUserKeywords, ad);
             await message.SendMonitorMessageAsync(clientManager, logger, content);
             return;
         }
@@ -128,12 +128,12 @@ public static class TelegramExtensions
 
         var msgContent = message.FormatForMonitor(
                              chatBase, user, messageText,
-                             matchedKeywords, ads);
+                             matchedKeywords, ad);
 
         await message.SendMonitorMessageAsync(clientManager, logger, msgContent);
     }
 
-    public static async Task SendMonitorMessageAsync(this Message originalMessage, 
+    public static async Task SendMonitorMessageAsync(this Message originalMessage,
         TelegramClientManager clientManager, ILogger logger, string content)
     {
         try
