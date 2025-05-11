@@ -27,7 +27,7 @@ public static class MessageFormatExtensions
             .AppendLine($"内容：{styledText}")
             .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $"c/{chat.ID}"}/{message.id}\">【直达】</a>")
             .AppendLine("--------------------------------");
-            .Append(adSection);
+            
 
         return sb.ToString();
     }
