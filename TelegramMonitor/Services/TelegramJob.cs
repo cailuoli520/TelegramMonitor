@@ -11,7 +11,7 @@ public class TelegramJob : IJob
     private readonly TelegramTask _task;
 
     public TelegramJob(
-        ILogger<TelegramJob> logger, 
+        ILogger<TelegramJob> logger,
         TelegramClientManager mangr,
         TelegramTask task)
     {
@@ -27,21 +27,21 @@ public class TelegramJob : IJob
             if (!_mangr.IsLoggedIn)
             {
                 _logger.LogWarning("Telegram账号未登录或已断开连接，尝试重新连接");
-                
+
                 var phone = _mangr.GetPhone;
-                
+
                 if (string.IsNullOrEmpty(phone))
                 {
                     _logger.LogError("没有保存的电话号码，无法自动重连");
                     return;
                 }
-                
-                var loginResult = await _mangr.LoginAsync(phone, string.Empty);
-                
+
+                var loginResult = await _mangr.ConnectAsync(phone);
+
                 if (loginResult == LoginState.LoggedIn)
                 {
                     _logger.LogInformation("Telegram账号重新连接成功");
-                    
+
                     if (_task.IsMonitoring)
                     {
                         await _task.StartTaskAsync();
@@ -57,7 +57,6 @@ public class TelegramJob : IJob
             {
                 _logger.LogDebug("Telegram账号连接正常");
             }
-
         }
         catch (Exception e)
         {

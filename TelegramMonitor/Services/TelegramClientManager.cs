@@ -35,7 +35,6 @@ public sealed class TelegramClientManager : ISingleton, IAsyncDisposable
 
         EnsureClientCreated();
         ApplyProxy();
-
         var firstArg = string.IsNullOrWhiteSpace(loginInfo) ? phoneNumber : loginInfo;
         var result = await _client.Login(firstArg);
 
@@ -49,6 +48,19 @@ public sealed class TelegramClientManager : ISingleton, IAsyncDisposable
             null => IsLoggedIn ? LoginState.LoggedIn : LoginState.NotLoggedIn,
             _ => LoginState.NotLoggedIn
         };
+    }
+
+    public async Task<LoginState> ConnectAsync(string phoneNumber)
+    {
+        await _client.LoginUserIfNeeded();
+        if (IsLoggedIn)
+        {
+            return LoginState.LoggedIn;
+        }
+        else
+        {
+            return await LoginAsync(phoneNumber, string.Empty);
+        }
     }
 
     public async Task<LoginState> SetProxyAsync(ProxyType type, string url)
@@ -100,6 +112,7 @@ public sealed class TelegramClientManager : ISingleton, IAsyncDisposable
     {
         if (_manager != null) return _manager;
         _manager = _client.WithUpdateManager(onUpdate);
+
         return _manager;
     }
 
