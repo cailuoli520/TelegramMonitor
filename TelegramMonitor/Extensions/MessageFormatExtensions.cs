@@ -26,8 +26,8 @@ public static class MessageFormatExtensions
             .AppendLine($"时间：<code>{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}</code>")
             .AppendLine($"内容：{styledText}")
             .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $"c/{chat.ID}"}/{message.id}\">【直达】</a>")
-            .AppendLine("--------------------------------");
-            
+            .AppendLine("--------------------------------")
+            .Append($"@sousoukan3bot");
 
         return sb.ToString();
     }
