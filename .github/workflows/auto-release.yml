@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - test
-    
+      - ads
     paths-ignore:
       - '**.md'
       - '.gitignore'
@@ -99,67 +99,4 @@ jobs:
           name: ${{ matrix.name }}
           path: out/${{ matrix.artifact_name }}
           retention-days: 1
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1  
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: ./artifacts
-
-      - name: Get current date and time
-        id: datetime
-        run: |
-          echo "DATETIME=$(TZ='Asia/Shanghai' date +'%Y年%m月%d日 %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "VERSION=$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
-
-      - name: Get Latest Commit
-        id: commit
-        run: |
-          COMMIT=$(git log -1 --pretty=format:"%s")
-          echo "MESSAGE=$COMMIT" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ needs.build.outputs.version || steps.datetime.outputs.VERSION }}
-          name: "Release ${{ needs.build.outputs.version || steps.datetime.outputs.VERSION }}"
-          body: |
-            ## TelegramMonitor 更新说明
-
-            发布时间：${{ steps.datetime.outputs.DATETIME }}
-            发布者：${{ github.actor }}
-            
-            ### 更新内容
-            ${{ steps.commit.outputs.MESSAGE }}
-            
-            ### 支持平台
-            - Windows (x64/x86/ARM64)
-            - Linux (x64/ARM64)
-            - macOS (Intel/Apple Silicon)
-            
-            ### 下载说明
-            - Windows 用户请下载对应系统架构的 zip 文件
-              - 64位系统：TelegramMonitor-windows-64.zip
-              - 32位系统：TelegramMonitor-windows-32.zip
-              - ARM64系统：TelegramMonitor-windows-arm64.zip
-            - Linux 用户请下载对应架构的 zip 文件
-              - x64架构：TelegramMonitor-linux-64.zip
-              - ARM64架构：TelegramMonitor-linux-arm64.zip
-            - macOS 用户请下载对应架构的 zip 文件
-              - Intel芯片：TelegramMonitor-osx-64.zip
-              - Apple Silicon：TelegramMonitor-osx-arm64.zip
-          files: |
-            ./artifacts/**/*.zip
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+          
