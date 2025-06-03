@@ -25,9 +25,8 @@ public static class MessageFormatExtensions
             .AppendLine($"用户ID：<code>{user.id}</code>")
             .AppendLine($"用户：{user.GetTelegramUserLink()}  {user.GetTelegramUserName()}")
             .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $"c/{chat.ID}"}/{message.id}\">【直达】</a>")
-            .AppendLine("--------------------------------")
-            .Append(" <a href=\"https://386868.xyz/?invite=1004\">tg成品号</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"https://t.me/sousoukan3bot\">代码搜索bot</a>");
-
+            .AppendLine("--------------------------------");
+            
         return sb.ToString();
     }
 
