@@ -1,4 +1,4 @@
-﻿namespace TelegramMonitor;
+namespace TelegramMonitor;
 
 public class TelegramTask
 {
