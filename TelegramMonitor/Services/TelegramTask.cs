@@ -96,16 +96,18 @@ public class TelegramTask
                                            User(uut.user_id), uut.action);
                     break;
 
-                case UpdateChatUserTyping ucut:
-                    _logger.LogInformation("{Peer} is {Action} in {Chat}",
-                                           Peer(ucut.from_id), ucut.action,
-                                           ChatBase(ucut.chat_id));
-                    break;
-
+                // 🟢 先处理更具体的 UpdateChannelUserTyping
                 case UpdateChannelUserTyping ucut2:
                     _logger.LogInformation("{Peer} is {Action} in {Chat}",
                                            Peer(ucut2.from_id), ucut2.action,
                                            ChatBase(ucut2.channel_id));
+                    break;
+
+                // 🟢 后处理较通用的 UpdateChatUserTyping
+                case UpdateChatUserTyping ucut:
+                    _logger.LogInformation("{Peer} is {Action} in {Chat}",
+                                           Peer(ucut.from_id), ucut.action,
+                                           ChatBase(ucut.chat_id));
                     break;
 
                 case UpdateChatParticipants { participants: ChatParticipants cp }:
