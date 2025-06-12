@@ -58,87 +58,87 @@ public class TelegramTask
         await _clientManager.StopUpdateManagerAsync();
         _logger.LogError("主动停止监控");
     }
-}
 
     private async Task HandleUpdateAsync(Update update)
-{
-    try
     {
-        switch (update)
+        try
         {
-            case UpdateNewMessage unm:
-                await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
-                break;
+            switch (update)
+            {
+                case UpdateNewMessage unm:
+                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    break;
 
-            case UpdateNewChannelMessage uncm:
-                await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
-                break;
+                case UpdateNewChannelMessage uncm:
+                    await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    break;
 
-            case UpdateEditMessage uem:
-                _logger.LogInformation(
-                    "{User} edited a message in {Chat}",
-                    User(uem.message.From),
-                    ChatBase(uem.message.Peer));
-                break;
+                case UpdateEditMessage uem:
+                    _logger.LogInformation(
+                        "{User} edited a message in {Chat}",
+                        User(uem.message.From),
+                        ChatBase(uem.message.Peer));
+                    break;
 
-            case UpdateDeleteChannelMessages udcm:
-                _logger.LogInformation("{Count} message(s) deleted in {Chat}",
-                                       udcm.messages.Length,
-                                       ChatBase(udcm.channel_id));
-                break;
+                case UpdateDeleteChannelMessages udcm:
+                    _logger.LogInformation("{Count} message(s) deleted in {Chat}",
+                                           udcm.messages.Length,
+                                           ChatBase(udcm.channel_id));
+                    break;
 
-            case UpdateDeleteMessages udm:
-                _logger.LogInformation("{Count} message(s) deleted",
-                                       udm.messages.Length);
-                break;
+                case UpdateDeleteMessages udm:
+                    _logger.LogInformation("{Count} message(s) deleted",
+                                           udm.messages.Length);
+                    break;
 
-            case UpdateUserTyping uut:
-                _logger.LogInformation("{User} is {Action}",
-                                       User(uut.user_id), uut.action);
-                break;
+                case UpdateUserTyping uut:
+                    _logger.LogInformation("{User} is {Action}",
+                                           User(uut.user_id), uut.action);
+                    break;
 
-            case UpdateChatUserTyping ucut:
-                _logger.LogInformation("{Peer} is {Action} in {Chat}",
-                                       Peer(ucut.from_id), ucut.action,
-                                       ChatBase(ucut.chat_id));
-                break;
+                case UpdateChatUserTyping ucut:
+                    _logger.LogInformation("{Peer} is {Action} in {Chat}",
+                                           Peer(ucut.from_id), ucut.action,
+                                           ChatBase(ucut.chat_id));
+                    break;
 
-            case UpdateChannelUserTyping ucut2:
-                _logger.LogInformation("{Peer} is {Action} in {Chat}",
-                                       Peer(ucut2.from_id), ucut2.action,
-                                       ChatBase(ucut2.channel_id));
-                break;
+                case UpdateChannelUserTyping ucut2:
+                    _logger.LogInformation("{Peer} is {Action} in {Chat}",
+                                           Peer(ucut2.from_id), ucut2.action,
+                                           ChatBase(ucut2.channel_id));
+                    break;
 
-            case UpdateChatParticipants { participants: ChatParticipants cp }:
-                _logger.LogInformation("{Count} participants in {Chat}",
-                                       cp.participants.Length,
-                                       ChatBase(cp.chat_id));
-                break;
+                case UpdateChatParticipants { participants: ChatParticipants cp }:
+                    _logger.LogInformation("{Count} participants in {Chat}",
+                                           cp.participants.Length,
+                                           ChatBase(cp.chat_id));
+                    break;
 
-            case UpdateUserStatus uus:
-                _logger.LogInformation("{User} is now {Status}",
-                                       User(uus.user_id),
-                                       uus.status.GetType().Name[10..]);
-                break;
+                case UpdateUserStatus uus:
+                    _logger.LogInformation("{User} is now {Status}",
+                                           User(uus.user_id),
+                                           uus.status.GetType().Name[10..]);
+                    break;
 
-            case UpdateUserName uun:
-                _logger.LogInformation("{User} changed profile name: {FN} {LN}",
-                                       User(uun.user_id),
-                                       uun.first_name, uun.last_name);
-                break;
+                case UpdateUserName uun:
+                    _logger.LogInformation("{User} changed profile name: {FN} {LN}",
+                                           User(uun.user_id),
+                                           uun.first_name, uun.last_name);
+                    break;
 
-            case UpdateUser uu:
-                _logger.LogInformation("{User} changed infos/photo",
-                                       User(uu.user_id));
-                break;
+                case UpdateUser uu:
+                    _logger.LogInformation("{User} changed infos/photo",
+                                           User(uu.user_id));
+                    break;
 
-            default:
-                _logger.LogInformation(update.GetType().Name);
-                break;
+                default:
+                    _logger.LogInformation(update.GetType().Name);
+                    break;
+            }
         }
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "处理更新时出错");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "处理更新时出错");
+        }
     }
 }
