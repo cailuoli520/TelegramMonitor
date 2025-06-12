@@ -38,6 +38,12 @@ public class TelegramTask
             var dialogs = await client.Messages_GetAllDialogs();
             dialogs.CollectUsersChats(manager.Users, manager.Chats);
 
+            // 检查频道信息
+            var channels = dialogs.Chats
+                .Where(c => c.Value is Channel)
+                .Select(c => c.Value as Channel);
+            _logger.LogDebug("已加载频道数: {Count}", channels.Count());
+
             if (client.User == null) return MonitorStartResult.NoUserInfo;
 
             _running = true;
@@ -65,8 +71,14 @@ public class TelegramTask
         {
             switch (update)
             {
+                // 合并处理普通消息和频道消息
                 case UpdateNewMessage unm:
-                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                case UpdateNewChannelMessage uncm:
+                    var message = unm?.message ?? uncm?.message;
+                    if (message != null)
+                    {
+                        await message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    }
                     break;
 
                 case UpdateEditMessage uem:
@@ -74,6 +86,13 @@ public class TelegramTask
                         "{User} edited a message in {Chat}",
                         User(uem.message.From),
                         ChatBase(uem.message.Peer));
+                    break;
+                    
+                // 添加频道消息编辑处理
+                case UpdateEditChannelMessage uecm:
+                    _logger.LogInformation(
+                        "频道消息编辑: {ChatID}",
+                        uecm.channel_id);
                     break;
 
                 case UpdateDeleteChannelMessages udcm:
@@ -135,6 +154,47 @@ public class TelegramTask
         catch (Exception ex)
         {
             _logger.LogError(ex, "处理 Update 时发生异常");
+        }
+    }
+}
+
+// 添加频道消息处理扩展方法
+public static class MessageExtensions
+{
+    public static async Task HandleMessageAsync(
+        this Message message,
+        TelegramClientManager clientManager,
+        SystemCacheServices cacheServices,
+        ILogger logger)
+    {
+        try
+        {
+            // 获取消息的Peer信息
+            var peerInfo = clientManager.GetUpdateManager().UserOrChat(message.Peer);
+            
+            // 区分频道消息和普通消息
+            string sourceType = message.Peer is PeerChannel ? "频道" : "聊天";
+            
+            logger.LogInformation("收到{SourceType}消息: [{Peer}] {Text}", 
+                sourceType, 
+                peerInfo?.Title ?? "未知来源",
+                message.message);
+            
+            // 在这里添加实际的消息处理逻辑
+            // 例如：cacheServices.ProcessMessage(message);
+            
+            // 如果需要回复消息
+            if (clientManager.GetSendChatId() != 0)
+            {
+                var client = await clientManager.GetClientAsync();
+                await client.SendMessageAsync(
+                    new InputPeerChat(clientManager.GetSendChatId()),
+                    $"收到来自 {peerInfo?.Title} 的消息: {message.message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "处理消息时发生异常");
         }
     }
 }
