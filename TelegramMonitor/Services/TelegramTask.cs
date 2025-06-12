@@ -1,4 +1,4 @@
-﻿namespace TelegramMonitor;
+namespace TelegramMonitor;
 
 public class TelegramTask
 {
@@ -139,12 +139,5 @@ public class TelegramTask
     catch (Exception ex)
     {
         _logger.LogError(ex, "处理更新时出错");
-    }
-}
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "处理 Update 时发生异常");
-        }
     }
 }
