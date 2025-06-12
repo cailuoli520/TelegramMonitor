@@ -58,6 +58,7 @@ public class TelegramTask
         await _clientManager.StopUpdateManagerAsync();
         _logger.LogError("主动停止监控");
     }
+}
 
     private async Task HandleUpdateAsync(Update update)
 {
