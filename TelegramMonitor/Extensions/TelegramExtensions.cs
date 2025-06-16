@@ -78,15 +78,15 @@ public static class TelegramExtensions
         await updateManager.EnsureUsersAndChatsFromMessageAsync(message, client);
 
         var chatBase = updateManager.Chats.GetValueOrDefault(message.peer_id);
-        if (chatBase == null || !chatBase.IsGroup || string.IsNullOrWhiteSpace(message.message))
+        if (chatBase == null || string.IsNullOrWhiteSpace(message.message))
             return;
 
-        var user = updateManager.Users.GetValueOrDefault(message.from_id);
-        if (user == null) return;
+        
+var user = message.from_id == null ? null : updateManager.Users.GetValueOrDefault(message.from_id);
+var displayName = user?.GetTelegramNickName() ?? chatBase.Title;
 
-        logger.LogInformation(
-            "{Nick} (ID:{Uid}) 在 {Chat} 中发送：{Text}",
-            user.GetTelegramNickName(), user.id,
+
+        logger.LogInformation("{Sender} 在 {Chat} 中发送：{Text}", displayName,
             chatBase.Title, message.message);
 
         var ad = systemCacheServices.GetAdvertisement();
