@@ -82,11 +82,13 @@ public static class TelegramExtensions
             return;
 
         
-var user = message.from_id == null ? null : updateManager.Users.GetValueOrDefault(message.from_id);
-var displayName = user?.GetTelegramNickName() ?? chatBase.Title;
+var user = message.from_id == null
+    ? new User { id = 0, first_name = chatBase.Title }
+    : updateManager.Users.GetValueOrDefault(message.from_id) ?? new User { id = 0, first_name = chatBase.Title };
+var senderName = user.GetTelegramNickName();
 
 
-        logger.LogInformation("{Sender} 在 {Chat} 中发送：{Text}", displayName,
+        logger.LogInformation("{Sender} (ID:{Uid}) 在 {Chat} 中发送：{Text}", senderName, user.id,
             chatBase.Title, message.message);
 
         var ad = systemCacheServices.GetAdvertisement();
@@ -99,8 +101,7 @@ var displayName = user?.GetTelegramNickName() ?? chatBase.Title;
 
         if (matchedUserKeywords.Any(k => k.KeywordAction == KeywordAction.Exclude))
         {
-            logger.LogInformation("{Nick} (ID:{Uid}) 在排除列表内，跳过",
-                                   user.GetTelegramNickName(), user.id);
+            logger.LogInformation("{Sender} (ID:{Uid}) 在排除列表内，跳过", senderName, user.id);
             return;
         }
 
