@@ -1,4 +1,4 @@
-﻿namespace TelegramMonitor;
+namespace TelegramMonitor;
 
 public class TelegramTask
 {
@@ -65,29 +65,9 @@ public class TelegramTask
         {
             switch (update)
             {
-
-                // Added to handle channel updates
-                case UpdateNewChannelMessage uncm:
-                    await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
-                    break;
-
-                case UpdateEditChannelMessage uecm:
-                    _logger.LogInformation(
-                        "{User} edited a channel message in {Chat}",
-                        User(uecm.message.From),
-                        ChatBase(uecm.message.Peer));
-                    break;
-
-                case UpdateDeleteChannelMessages udcm:
-                    _logger.LogInformation("{Count} message(s) deleted in {Chat}",
-                                           udcm.messages.Length,
-                                           ChatBase(udcm.channel_id));
-                    break;
-
                 case UpdateNewMessage unm:
                     await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
                     break;
-
 
                 case UpdateEditMessage uem:
                     _logger.LogInformation(
@@ -96,6 +76,11 @@ public class TelegramTask
                         ChatBase(uem.message.Peer));
                     break;
 
+                case UpdateDeleteChannelMessages udcm:
+                    _logger.LogInformation("{Count} message(s) deleted in {Chat}",
+                                           udcm.messages.Length,
+                                           ChatBase(udcm.channel_id));
+                    break;
 
                 case UpdateDeleteMessages udm:
                     _logger.LogInformation("{Count} message(s) deleted",
