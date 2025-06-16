@@ -65,16 +65,28 @@ public class TelegramTask
         {
             switch (update)
             {
-                case UpdateNewMessage unm:
-                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+
+                // Added to handle channel updates
+                case UpdateNewChannelMessage uncm:
+                    await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
                     break;
 
-// Added to handle channel updates
-case UpdateNewChannelMessage uncm:
-    await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
-    break;
+                case UpdateEditChannelMessage uecm:
+                    _logger.LogInformation(
+                        "{User} edited a channel message in {Chat}",
+                        User(uecm.message.From),
+                        ChatBase(uecm.message.Peer));
+                    break;
 
-case UpdateEditChannelMessage uecm:
+                case UpdateDeleteChannelMessages udcm:
+                    _logger.LogInformation("{Count} message(s) deleted in {Chat}",
+                                           udcm.messages.Length,
+                                           ChatBase(udcm.channel_id));
+                    break;
+
+                case UpdateNewMessage unm:
+                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    break;case UpdateEditChannelMessage uecm:
     _logger.LogInformation(
         "{User} edited a channel message in {Chat}",
         User(uecm.message.From),
