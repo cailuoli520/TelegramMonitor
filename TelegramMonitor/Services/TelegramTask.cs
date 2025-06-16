@@ -76,7 +76,6 @@ public class TelegramTask
                         "{User} edited a channel message in {Chat}",
                         User(uecm.message.From),
                         ChatBase(uecm.message.Peer));
-                    break;
 
                 case UpdateDeleteChannelMessages udcm:
                     _logger.LogInformation("{Count} message(s) deleted in {Chat}",
@@ -89,8 +88,6 @@ public class TelegramTask
                     break;
     _logger.LogInformation(
         "{User} edited a channel message in {Chat}",
-        User(uecm.message.From),
-        ChatBase(uecm.message.Peer));
     break;
 
 
