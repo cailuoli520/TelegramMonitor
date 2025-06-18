@@ -65,11 +65,11 @@ public class TelegramTask
         {
             switch (update)
             {
-                case UpdateNewMessage unm:
-                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
-                    break;
                 case UpdateNewChannelMessage uncm:
                     await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    break;
+                case UpdateNewMessage unm:
+                    await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
                     break;
 
 
