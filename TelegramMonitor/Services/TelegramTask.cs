@@ -68,6 +68,11 @@ public class TelegramTask
                 case UpdateNewMessage unm:
                     await unm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
                     break;
+                case UpdateNewChannelMessage uncm:
+                    await uncm.message.HandleMessageAsync(_clientManager, _systemCacheServices, _logger);
+                    break;
+
+
 
                 case UpdateEditMessage uem:
                     _logger.LogInformation(
