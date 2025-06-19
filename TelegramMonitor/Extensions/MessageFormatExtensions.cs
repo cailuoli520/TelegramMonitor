@@ -2,6 +2,10 @@ namespace TelegramMonitor;
 
 public static class MessageFormatExtensions
 {
+    /// <summary>
+    /// Format a Telegram message into the HTML snippet used by the monitor, with a fix
+    /// for channel posts (user id = 0) so that channel info is shown instead of 0.
+    /// </summary>
     public static string FormatForMonitor(this Message message,
         ChatBase chat,
         User user,
@@ -9,8 +13,9 @@ public static class MessageFormatExtensions
         IReadOnlyList<KeywordConfig> hitKeywords,
         string ad = null)
     {
+        // Merge and apply keyword styles to the message text
         var mergedStyle = MergeKeywordStyles(hitKeywords);
-        var styledText = ApplyStylesToText(messageText, mergedStyle);
+        var styledText  = ApplyStylesToText(messageText, mergedStyle);
 
         var adSection = !string.IsNullOrWhiteSpace(ad)
             ? $"<b>{SecurityElement.Escape(ad)}</b>"
@@ -18,39 +23,48 @@ public static class MessageFormatExtensions
 
         var plainList = string.Join(", ", hitKeywords.Select(k => k.KeywordContent));
 
-        var sb = new StringBuilder()
-            .AppendLine($"内容：{styledText}")
-            .AppendLine($"来源：<code>【{chat.Title}】</code>  {chat.MainUsername?.Insert(0, "@") ?? "无"}")
-            .AppendLine($"时间：<code>{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}</code>");
+        // —— Detect if this message is a channel post ——
+        var isChannelPost = message.post ?? false;
 
-            // —— 频道帖子修正 ——
-            var isChannelPost = message.post ?? false;
-            string senderIdDisplay;
-            string senderNameDisplay;
+        string senderIdDisplay;
+        string senderNameDisplay;
 
-            if (isChannelPost && chat is Channel channel)
+        if (isChannelPost && chat is Channel channel)
+        {
+            // Message originates from the channel itself
+            if (!string.IsNullOrEmpty(channel.MainUsername))
             {
-                if (!string.IsNullOrEmpty(channel.MainUsername))
-                    senderIdDisplay = $"@{channel.MainUsername}";
-                else
-                    senderIdDisplay = $"https://t.me/c/{channel.ID}";
-
-                senderNameDisplay = SecurityElement.Escape(channel.Title);
+                // Public channel – use @username
+                senderIdDisplay = $"@{channel.MainUsername}";
             }
             else
             {
-                senderIdDisplay = user?.id.ToString() ?? "<unknown>";
-                senderNameDisplay = $"{user.GetTelegramUserLink()}  {user.GetTelegramUserName()}";
+                // Private channel – fallback link
+                senderIdDisplay = $"https://t.me/c/{channel.ID}";
             }
 
-            sb.AppendLine($"用户ID：<code>{senderIdDisplay}</code>")
-              .AppendLine($"用户：{senderNameDisplay}")
-              .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $\"c/{chat.ID}\"}/{message.id}\">【直达】</a>");
+            senderNameDisplay = SecurityElement.Escape(channel.Title);
+        }
+        else
+        {
+            // Group / supergroup / private chat
+            senderIdDisplay  = user?.id.ToString() ?? "<unknown>";
+            senderNameDisplay = $"{user.GetTelegramUserLink()}  {user.GetTelegramUserName()}";
+        }
 
-            
+        // Build the output
+        var sb = new StringBuilder()
+            .AppendLine($"内容：{styledText}")
+            .AppendLine($"来源：<code>【{chat.Title}】</code>  {chat.MainUsername?.Insert(0, "@") ?? "无"}")
+            .AppendLine($"时间：<code>{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}</code>")
+            .AppendLine($"用户ID：<code>{senderIdDisplay}</code>")
+            .AppendLine($"用户：{senderNameDisplay}")
+            .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $"c/{chat.ID}"}/{message.id}\">【直达】</a>");
+
         return sb.ToString();
     }
 
+    // Existing helper methods remain unchanged
     private static KeywordConfig MergeKeywordStyles(IEnumerable<KeywordConfig> list)
     {
         var merged = new KeywordConfig();
@@ -71,13 +85,13 @@ public static class MessageFormatExtensions
     {
         var result = text ?? string.Empty;
 
-        if (cfg.IsQuote) result = $"<blockquote>{result}</blockquote>";
-        if (cfg.IsSpoiler) result = $"<tg-spoiler>{result}</tg-spoiler>";
-        if (cfg.IsMonospace) result = $"<code>{result}</code>";
-        if (cfg.IsBold) result = $"<b>{result}</b>";
-        if (cfg.IsItalic) result = $"<i>{result}</i>";
-        if (cfg.IsUnderline) result = $"<u>{result}</u>";
-        if (cfg.IsStrikeThrough) result = $"<s>{result}</s>";
+        if (cfg.IsQuote)        result = $"<blockquote>{result}</blockquote>";
+        if (cfg.IsSpoiler)      result = $"<tg-spoiler>{result}</tg-spoiler>";
+        if (cfg.IsMonospace)    result = $"<code>{result}</code>";
+        if (cfg.IsBold)         result = $"<b>{result}</b>";
+        if (cfg.IsItalic)       result = $"<i>{result}</i>";
+        if (cfg.IsUnderline)    result = $"<u>{result}</u>";
+        if (cfg.IsStrikeThrough)result = $"<s>{result}</s>";
 
         return result;
     }
