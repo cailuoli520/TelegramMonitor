@@ -1,4 +1,4 @@
-﻿namespace TelegramMonitor;
+namespace TelegramMonitor;
 
 public static class MessageFormatExtensions
 {
@@ -21,10 +21,32 @@ public static class MessageFormatExtensions
         var sb = new StringBuilder()
             .AppendLine($"内容：{styledText}")
             .AppendLine($"来源：<code>【{chat.Title}】</code>  {chat.MainUsername?.Insert(0, "@") ?? "无"}")
-            .AppendLine($"时间：<code>{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}</code>")
-            .AppendLine($"用户ID：<code>{user.id}</code>")
-            .AppendLine($"用户：{user.GetTelegramUserLink()}  {user.GetTelegramUserName()}")
-            .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $"c/{chat.ID}"}/{message.id}\">【直达】</a>");
+            .AppendLine($"时间：<code>{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}</code>");
+
+            // —— 频道帖子修正 ——
+            var isChannelPost = message.post ?? false;
+            string senderIdDisplay;
+            string senderNameDisplay;
+
+            if (isChannelPost && chat is Channel channel)
+            {
+                if (!string.IsNullOrEmpty(channel.MainUsername))
+                    senderIdDisplay = $"@{channel.MainUsername}";
+                else
+                    senderIdDisplay = $"https://t.me/c/{channel.ID}";
+
+                senderNameDisplay = SecurityElement.Escape(channel.Title);
+            }
+            else
+            {
+                senderIdDisplay = user?.id.ToString() ?? "<unknown>";
+                senderNameDisplay = $"{user.GetTelegramUserLink()}  {user.GetTelegramUserName()}";
+            }
+
+            sb.AppendLine($"用户ID：<code>{senderIdDisplay}</code>")
+              .AppendLine($"用户：{senderNameDisplay}")
+              .AppendLine($"链接：<a href=\"https://t.me/{chat.MainUsername ?? $\"c/{chat.ID}\"}/{message.id}\">【直达】</a>");
+
             
         return sb.ToString();
     }
