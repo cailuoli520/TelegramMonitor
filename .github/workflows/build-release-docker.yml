@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - test
+      - follow
     
     paths-ignore:
       - '**.md'
