@@ -34,14 +34,11 @@ public static class MessageFormatExtensions
 
         var sb = new StringBuilder()
         .AppendLine($"内容：{styledText}")
-        .AppendLine($"发送ID：`{sendMessageEntity.SendId}`")
-        .AppendLine($"发送方：[{sendMessageEntity.SendTitle}](tg://user?id={sendMessageEntity.SendId})   {sendMessageEntity.SendUserNames.JoinUsernames()}")
         .AppendLine($"来源：`{sendMessageEntity.FromTitle}`    {sendMessageEntity.FromUserNames.JoinUsernames()}")
         .AppendLine($"时间：`{message.Date.AddHours(8):yyyy-MM-dd HH:mm:ss}`")
+        .AppendLine($"用户ID：`{sendMessageEntity.SendId}`")
+        .AppendLine($"用户：[{sendMessageEntity.SendTitle}](tg://user?id={sendMessageEntity.SendId})   {sendMessageEntity.SendUserNames.JoinUsernames()}")
         .AppendLine($"链接：[【直达】](https://t.me/{sendMessageEntity.FromMainUserName ?? $"c/{sendMessageEntity.FromId}"}/{message.id})")
-        .AppendLine($"*命中关键词：* {keywordList}")
-        .AppendLine("`--------------------------------`")
-        .Append(adSection);
         return sb.ToString();
     }
 
