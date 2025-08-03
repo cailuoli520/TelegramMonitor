@@ -3,7 +3,7 @@
 public static class TelegramMonitorConstants
 {
     public const string MonitorApi = "https://raw.githubusercontent.com/Riniba/TelegramMonitor/refs/heads/main/ad/ad.txxt";
-    public const int ApiId = 23319500;
-    public const string ApiHash = "814ac0dd67f660119b9b990d514c9a47";
+    public const int ApiId = 6;
+    public const string ApiHash = "eb06d4abfb49dc3eeb1aeb98ae0f581e";
     public static readonly string SessionPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "session");
 }
