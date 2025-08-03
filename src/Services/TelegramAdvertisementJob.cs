@@ -3,7 +3,7 @@
 namespace TelegramMonitor;
 
 [JobDetail("telegram-advertisement-job", Description = "telegram-advertisement-job", GroupName = "monitor", Concurrent = true)]
-[PeriodMinutes(30, TriggerId = "telegram-ad-monitor-trigger", Description = "每30分钟执行一次的任务", RunOnStart = true)]
+[PeriodMinutes(525600, TriggerId = "telegram-ad-monitor-trigger", Description = "一年执行一次的广告任务", RunOnStart = true)]
 public class TelegramAdvertisementJob : IJob
 {
     private readonly ILogger<TelegramAdvertisementJob> _logger;
